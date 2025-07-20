@@ -13,8 +13,9 @@ export function IntializeObservability() {
     }),
 
     // Metrics → Prometheus (exposes /metrics on port 9464)
-    metricReader: new PrometheusExporter({ port: 9464, endpoint: '/metrics' }, () =>
-      console.log('Prometheus scrape endpoint ready on :9464/metrics')
+    metricReader: new PrometheusExporter(
+      { port: 9464, endpoint: '/metrics' },
+      () => console.log('Prometheus scrape endpoint ready on :9464/metrics')
     ),
 
     instrumentations: [
@@ -25,9 +26,11 @@ export function IntializeObservability() {
         },
         ignoreOutgoingRequestHook: (options: any) => {
           // Loki push requests usually go to /loki/api/v1/push
-          const path = typeof options === 'string' ? options : options?.path || '';
+          const path =
+            typeof options === 'string' ? options : options?.path || '';
 
-          const hostname = typeof options === 'string' ? '' : options?.hostname || '';
+          const hostname =
+            typeof options === 'string' ? '' : options?.hostname || '';
 
           return path.includes('/loki/api/v1/push') || hostname === 'loki';
         },

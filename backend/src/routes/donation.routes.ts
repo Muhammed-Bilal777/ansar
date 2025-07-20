@@ -12,7 +12,12 @@ export const AdmindonationRouter = Router();
 export const donationRouter = Router();
 
 //admin
-AdmindonationRouter.post('/donation', authenticateUser, authorizeRole('admin'), createDonation);
+AdmindonationRouter.post(
+  '/donation',
+  authenticateUser,
+  authorizeRole('admin'),
+  createDonation
+);
 AdmindonationRouter.get(
   '/donation/:id',
   authenticateUser,
@@ -21,7 +26,12 @@ AdmindonationRouter.get(
 );
 
 //all donation
-AdmindonationRouter.get('/donations', authenticateUser, authorizeRole('admin'), AllDonation);
+AdmindonationRouter.get(
+  '/donations',
+  authenticateUser,
+  authorizeRole('admin'),
+  AllDonation
+);
 
 //Donations
 donationRouter.post('/:id', authenticateUser, donateToCampaign);

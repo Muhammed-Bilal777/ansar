@@ -7,14 +7,23 @@ import { signToken } from '../utils/jwt';
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    const { email, password, ...rest } = req.body;
+    const { email, password, confirmPassword, ...rest } = req.body;
+    if (password !== confirmPassword) {
+      console.log(password, confirmPassword);
+      return res
+        .status(400)
+        .json({ message: 'Password and Confirm password is not matching' });
+    }
     const exists = await User.findOne({ email });
-    if (exists) return res.status(400).json({ message: 'Email already in use' });
+    if (exists)
+      return res.status(400).json({ message: 'Email already in use' });
 
     const hashed = await hashPassword(password);
     const user = await User.create({ ...rest, email, password: hashed });
+    const userObj = user.toObject();
+    const { password: Excludepassword, ...restUser } = userObj;
 
-    res.status(201).json({ success: true, user });
+    res.status(201).json({ success: true, user: restUser });
   } catch (error) {
     res.status(500).json({ message: 'Registration failed', error });
   }
@@ -28,9 +37,13 @@ export const loginUser = async (req: Request, res: Response) => {
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     const isMatch = await comparePassword(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!isMatch)
+      return res.status(401).json({ message: 'Invalid credentials' });
     const expiresIn = 24 * 60 * 60 * 1000;
-    const token = signToken({ id: user._id, role: user.role, email: user.email }, expiresIn);
+    const token = signToken(
+      { id: user._id, role: user.role, email: user.email },
+      expiresIn
+    );
     const userObj = user.toObject();
     const { password: Excludepassword, ...restUser } = userObj;
 
