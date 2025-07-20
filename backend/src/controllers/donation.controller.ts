@@ -4,7 +4,8 @@ import { Donation } from '../models/donation.model';
 
 export const createDonation = async (req: any, res: Response) => {
   try {
-    const { title, description, category, targetAmount, deadline, image } = req.body;
+    const { title, description, category, targetAmount, deadline, image } =
+      req.body;
 
     const newDonation = await Donation.create({
       title,
@@ -41,11 +42,15 @@ export const donateToCampaign = async (req: any, res: Response) => {
     }
 
     if (!donation.status) {
-      return res.status(400).json({ message: 'This donation campaign is not active' });
+      return res
+        .status(400)
+        .json({ message: 'This donation campaign is not active' });
     }
 
     if (new Date() > donation.deadline) {
-      return res.status(400).json({ message: 'This donation campaign has expired' });
+      return res
+        .status(400)
+        .json({ message: 'This donation campaign has expired' });
     }
 
     // Check if user already donated

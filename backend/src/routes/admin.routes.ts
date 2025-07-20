@@ -6,4 +6,9 @@ import { authenticateUser } from '../middlewares/authMiddleware.js';
 export const adminRouter = Router();
 
 //admin routes
-adminRouter.get('/users', authenticateUser, authorizeRole('admin'), getAllUsers);
+adminRouter.get(
+  '/users',
+  authenticateUser,
+  authorizeRole('admin'),
+  getAllUsers
+);

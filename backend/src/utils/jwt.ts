@@ -4,7 +4,10 @@ import type { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 // Ensure your secret is typed as a string explicitly
 const JWT_SECRET: string = process.env.JWT_SECRET || 'default_secret';
 
-export function signToken(payload: Record<string, any>, expiresIn: number): string {
+export function signToken(
+  payload: Record<string, any>,
+  expiresIn: number
+): string {
   // Explicitly define the options object with SignOptions type
   const options: SignOptions = { expiresIn };
   return jwt.sign(payload, JWT_SECRET, options); // ✅ Correct usage

@@ -28,7 +28,9 @@ app.use((req, res, next) => {
   res.on('finish', () => {
     if (req.originalUrl === '/metrics') return;
 
-    reqCounter.labels(req.method, req.originalUrl.split('?')[0], String(res.statusCode)).inc();
+    reqCounter
+      .labels(req.method, req.originalUrl.split('?')[0], String(res.statusCode))
+      .inc();
   });
   next();
 });

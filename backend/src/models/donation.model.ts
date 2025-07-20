@@ -27,7 +27,13 @@ const DonationSchema = new Schema<IDonation>(
     description: { type: String, required: true },
     category: {
       type: String,
-      enum: ['Medical', 'Education', 'Disaster Relief', 'Community', 'Environment'],
+      enum: [
+        'Medical',
+        'Education',
+        'Disaster Relief',
+        'Community',
+        'Environment',
+      ],
       required: true,
     },
     targetAmount: { type: Number, required: true },
