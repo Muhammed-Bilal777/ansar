@@ -3,7 +3,13 @@
 import "../global-css/auth/index.css"
 import { Heart, Eye, EyeOff, Mail, Lock } from "lucide-react"
 import { useState } from "react"
-
+import { useDispatch, useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import { useLoginUserMutation } from "../features/user/userApiSlice"
+import Loader from "../utils/Loader"
+import { toast } from "react-toastify"
+import { setUser } from "../features/user/userSlice"
+import { setToLocalStorage } from "../utils/localStorage/storage"
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState({
@@ -11,6 +17,32 @@ export default function LoginPage() {
         password: "",
         rememberMe: false,
     })
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const [loginUser, { data, isError, isLoading, isSuccess, error }] = useLoginUserMutation();
+
+
+    if (isLoading) {
+        return <Loader />
+    }
+
+    if (isError && error) {
+        const err = error as any
+        console.log(err, "err")
+
+        toast.error(err?.data?.message)
+
+        return <div>Error</div>
+    }
+
+    if (isSuccess) {
+        console.log(data.user)
+        toast.success("Logged in successfully")
+        setToLocalStorage('user', data?.user)
+        dispatch(setUser(data.user))
+        navigate('/')
+
+    }
 
     const handleInputChange = (e: any) => {
         const { name, value, type, checked } = e.target
@@ -19,23 +51,11 @@ export default function LoginPage() {
             [name]: type === "checkbox" ? checked : value,
         }))
     }
-    async function postData(data: any) {
-        const res = await fetch("/api/users/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
-        const resData = await res.json();
-        if (resData) {
-            console.log(resData)
-        }
-    }
+
     const handleSubmit = (e: any) => {
         e.preventDefault()
         console.log("Login form submitted:", formData)
-        postData(formData)
+        loginUser(formData)
     }
 
     return (

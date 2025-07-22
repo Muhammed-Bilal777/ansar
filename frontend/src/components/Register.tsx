@@ -2,10 +2,14 @@
 import "../global-css/auth/index.css"
 import { Heart, Eye, EyeOff, Mail, Lock, User, Phone, MapPinHouse } from "lucide-react"
 import { useState } from "react"
-
+import { useCreateUserMutation } from "../features/user/userApiSlice"
+import { toast } from "react-toastify"
+import Loader from "../utils/Loader"
+import { useNavigate } from "react-router-dom"
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -18,6 +22,25 @@ export default function RegisterPage() {
         subscribeNewsletter: false,
     })
 
+    const [createUser, { isLoading, isSuccess, isError, error }] = useCreateUserMutation();
+
+
+    if (isLoading) {
+        return <Loader />
+    }
+    if (isSuccess) {
+        toast.success("User created successfully!")
+        navigate('/login')
+    }
+    if (isError && error) {
+        const err = error as any
+        console.log(err, "err")
+
+        toast.error(err?.data?.message)
+
+        return <div>Error</div>
+    }
+
     const handleInputChange = (e: any) => {
         const { name, value, type, checked } = e.target
         setFormData((prev) => ({
@@ -25,28 +48,18 @@ export default function RegisterPage() {
             [name]: type === "checkbox" ? checked : value,
         }))
     }
-    async function postData(data: any) {
-        const res = await fetch("/api/users/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
-        const resData = await res.json();
-        if (resData) {
-            console.log(resData)
-        }
-    }
-    const handleSubmit = (e: any) => {
+
+    const handleSubmit = async (e: any) => {
         e.preventDefault()
         if (formData.password !== formData.confirmPassword) {
             alert("Passwords don't match!")
             return
         }
-        console.log("Register form submitted:", formData)
-        postData(formData)
-        // Handle registration logic here
+        try {
+            await createUser(formData)
+        } catch (error) {
+            console.error('Failed to create user:', error);
+        }
     }
     return (
         <div className="auth-container">
