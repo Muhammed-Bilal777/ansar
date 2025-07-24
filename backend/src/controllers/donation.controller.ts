@@ -1,6 +1,7 @@
 // controllers/donation.controller.ts
 import { Request, Response } from 'express';
 import { Donation } from '../models/donation.model';
+import { User } from '../models/user.model';
 
 export const createDonation = async (req: any, res: Response) => {
   try {
@@ -30,6 +31,7 @@ export const donateToCampaign = async (req: any, res: Response) => {
   try {
     const { id } = req.params;
     const { amount } = req.body;
+    const userId = req.user?.id;
 
     if (!amount || amount <= 0) {
       return res.status(400).json({ message: 'Invalid donation amount' });
@@ -53,27 +55,50 @@ export const donateToCampaign = async (req: any, res: Response) => {
         .json({ message: 'This donation campaign has expired' });
     }
 
-    // Check if user already donated
+    const now = new Date();
+
+    // Check if user already donated in Donation model
     const existingDonorIndex = donation.donors.findIndex(
-      (donor) => donor.userId.toString() === req.user?.id
+      (donor) => donor.userId.toString() === userId
     );
 
     if (existingDonorIndex >= 0) {
-      // Update existing donor's amount & timestamp
       donation.donors[existingDonorIndex].amount += amount;
-      donation.donors[existingDonorIndex].donatedAt = new Date();
+      donation.donors[existingDonorIndex].donatedAt = now;
     } else {
-      // New donor
       donation.donors.push({
-        userId: req.user?.id,
+        userId,
         amount,
-        donatedAt: new Date(),
+        donatedAt: now,
       });
     }
 
     donation.currentAmount += amount;
-
     await donation.save();
+
+    // ✅ Update the user's donatedTo array
+    const user = await User.findById(userId);
+
+    if (user) {
+      const existingDonation = user.donatedTo.find(
+        (d) => d.donationId.toString() === donation._id.toString()
+      );
+
+      if (existingDonation) {
+        // Update existing donation record
+        existingDonation.amount += amount;
+        existingDonation.donatedAt = now;
+      } else {
+        // Add new donation record
+        user.donatedTo.push({
+          donationId: donation._id,
+          amount,
+          donatedAt: now,
+        });
+      }
+
+      await user.save();
+    }
 
     const remaining = donation.targetAmount - donation.currentAmount;
 
@@ -90,9 +115,9 @@ export const donateToCampaign = async (req: any, res: Response) => {
         status: donation.status,
       },
       donor: {
-        userId: req.user?.id,
+        userId,
         amount,
-        donatedAt: new Date(),
+        donatedAt: now,
       },
     });
   } catch (error) {

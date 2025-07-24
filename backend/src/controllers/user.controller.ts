@@ -116,7 +116,12 @@ export const getUser = async (req: any, res: Response) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const user = await User.findById(userId).select('-password -__v');
+    // Populate the donations the user has made (title, amount, etc.)
+    const user = await User.findById(userId).select('-password -__v').populate({
+      path: 'donatedTo.donationId',
+      select: 'title category targetAmount currentAmount image', // choose fields to return
+    });
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
