@@ -12,6 +12,11 @@ export interface IUser extends Document {
   avatar?: string;
   city: string;
   isVerified: boolean;
+  donatedTo: {
+    donationId: mongoose.Types.ObjectId;
+    amount: number;
+    donatedAt: Date;
+  }[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -28,44 +33,55 @@ const userSchema = new Schema<IUser>(
       required: true,
       trim: true,
     },
-
     email: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
     },
-
     password: {
       type: String,
       required: true,
       minlength: 6,
       select: false,
     },
-
     role: {
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
     },
-
     phone: {
       type: String,
     },
-
     avatar: {
-      type: String, // URL or base64
+      type: String,
     },
-
     address: {
       type: String,
-      require: true,
+      required: true,
     },
-
     isVerified: {
       type: Boolean,
       default: false,
     },
+
+    donatedTo: [
+      {
+        donationId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Donation',
+          required: true,
+        },
+        amount: {
+          type: Number,
+          required: true,
+        },
+        donatedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
