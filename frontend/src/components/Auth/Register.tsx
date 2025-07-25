@@ -1,11 +1,13 @@
 "use client"
-import "../global-css/auth/index.css"
+import "../../global-css/auth/index.css"
 import { Heart, Eye, EyeOff, Mail, Lock, User, Phone, MapPinHouse } from "lucide-react"
 import { useState } from "react"
-import { useCreateUserMutation } from "../features/user/userApiSlice"
+
 import { toast } from "react-toastify"
-import Loader from "../utils/Loader"
+
 import { useNavigate } from "react-router-dom"
+import { useCreateUserMutation } from "../../features/user/userApiSlice"
+import Loader from "../../utils/Loader"
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)

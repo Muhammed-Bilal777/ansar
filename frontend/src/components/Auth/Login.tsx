@@ -1,15 +1,18 @@
 "use client"
 
-import "../global-css/auth/index.css"
+import "../../global-css/auth/index.css"
 import { Heart, Eye, EyeOff, Mail, Lock } from "lucide-react"
 import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { useLoginUserMutation } from "../features/user/userApiSlice"
-import Loader from "../utils/Loader"
+
+
 import { toast } from "react-toastify"
-import { setUser } from "../features/user/userSlice"
-import { setToLocalStorage } from "../utils/localStorage/storage"
+import { useLoginUserMutation } from "../../features/user/userApiSlice"
+import { setToLocalStorage } from "../../utils/localStorage/storage"
+import { setUser } from "../../features/user/userSlice"
+import Loader from "../../utils/Loader"
+
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState({
