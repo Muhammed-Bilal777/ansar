@@ -1,9 +1,11 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import LoginPage from './components/Login'
-import RegisterPage from './components/Register'
+
 import './index.css'
 import Homepage from './pages/Home/Home'
-import Loader from './utils/Loader'
+
+import { UserProfile } from './pages/profile/UserProfile'
+import RegisterPage from './components/Auth/Register'
+import LoginPage from './components/Auth/Login'
 
 export const App = () => {
   return (
@@ -12,7 +14,8 @@ export const App = () => {
         <Route path='/' element={<Homepage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/login' element={<LoginPage />} />
-        <Route path='/loader' element={<Loader />} />
+        <Route path='/profile' element={<UserProfile />} />
+
       </Routes>
     </BrowserRouter>
   )

@@ -19,8 +19,9 @@ import {
 } from "lucide-react"
 
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { GraduationCap, Building2 } from "lucide-react"
+import { getFromLocalStorage } from "../../utils/localStorage/storage"
 
 // Dummy donation data
 const donationsData = {
@@ -307,6 +308,13 @@ export default function Homepage() {
         }).format(amount)
     }
 
+    useEffect(() => {
+        const user = getFromLocalStorage('user')
+        if (user) {
+            console.log(user);
+        }
+
+    }, [])
     const formatDate = (dateString: any) => {
         return new Date(dateString).toLocaleDateString("en-US", {
             year: "numeric",
